@@ -4,7 +4,6 @@ Authentication schemas
 from pydantic import BaseModel, EmailStr, Field, validator
 from typing import Optional
 from datetime import datetime
-import uuid
 
 
 # ============================================
@@ -57,7 +56,7 @@ class TokenResponse(BaseModel):
 
 class UserResponse(BaseModel):
     """User information response"""
-    id: uuid.UUID
+    id: str
     email: str
     full_name: Optional[str]
     role: str

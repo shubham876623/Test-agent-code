@@ -2,17 +2,23 @@
 User model
 """
 from sqlalchemy import Column, String, Boolean, DateTime
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.database import Base
 import uuid
 from datetime import datetime
 
+# Use String for UUIDs in SQLite, UUID for PostgreSQL
+try:
+    from sqlalchemy.dialects.postgresql import UUID
+    UUID_TYPE = UUID(as_uuid=True)
+except:
+    UUID_TYPE = String(36)
+
 
 class User(Base):
     __tablename__ = "users"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     full_name = Column(String(255))

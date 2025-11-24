@@ -11,7 +11,7 @@ import secrets
 import hashlib
 
 # Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 
 # Token encryption (for QuickBooks tokens)
 cipher = Fernet(settings.ENCRYPTION_KEY.encode())
@@ -23,11 +23,17 @@ cipher = Fernet(settings.ENCRYPTION_KEY.encode())
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against its hash"""
+    # Truncate password to 72 bytes for bcrypt
+    if len(plain_password) > 72:
+        plain_password = plain_password[:72]
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
     """Hash a password for storage"""
+    # Truncate password to 72 bytes for bcrypt
+    if len(password) > 72:
+        password = password[:72]
     return pwd_context.hash(password)
 
 

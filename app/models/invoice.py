@@ -1,8 +1,7 @@
 """
 Invoice model
 """
-from sqlalchemy import Column, String, Integer, Numeric, Date, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Column, String, Integer, Numeric, Date, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from app.database import Base
 import uuid
@@ -12,9 +11,9 @@ from datetime import datetime
 class Invoice(Base):
     __tablename__ = "invoices"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    company_id = Column(UUID(as_uuid=True), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False, index=True)
-    customer_id = Column(UUID(as_uuid=True), ForeignKey("customers.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    company_id = Column(String(36), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False, index=True)
+    customer_id = Column(String(36), ForeignKey("customers.id", ondelete="CASCADE"), nullable=False, index=True)
     
     # QuickBooks Data
     quickbooks_invoice_id = Column(String(255), index=True)
@@ -40,8 +39,8 @@ class Invoice(Base):
     follow_up_count = Column(Integer, default=0)
     
     # Metadata
-    line_items = Column(JSONB)
-    quickbooks_data = Column(JSONB)
+    line_items = Column(JSON)
+    quickbooks_data = Column(JSON)
     internal_notes = Column(String)
     
     created_at = Column(DateTime, default=datetime.utcnow)

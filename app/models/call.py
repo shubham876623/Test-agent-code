@@ -1,8 +1,7 @@
 """
 Call model (VAPI integration)
 """
-from sqlalchemy import Column, String, Boolean, Integer, Numeric, Date, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Column, String, Boolean, Integer, Numeric, Date, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from app.database import Base
 import uuid
@@ -12,10 +11,10 @@ from datetime import datetime
 class Call(Base):
     __tablename__ = "calls"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    company_id = Column(UUID(as_uuid=True), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False, index=True)
-    invoice_id = Column(UUID(as_uuid=True), ForeignKey("invoices.id", ondelete="CASCADE"), index=True)
-    customer_id = Column(UUID(as_uuid=True), ForeignKey("customers.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    company_id = Column(String(36), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False, index=True)
+    invoice_id = Column(String(36), ForeignKey("invoices.id", ondelete="CASCADE"), index=True)
+    customer_id = Column(String(36), ForeignKey("customers.id", ondelete="CASCADE"), nullable=False, index=True)
     
     # VAPI Data
     vapi_call_id = Column(String(255), unique=True, index=True)
@@ -39,7 +38,7 @@ class Call(Base):
     
     # Content
     transcript = Column(String)
-    transcript_json = Column(JSONB)
+    transcript_json = Column(JSON)
     recording_url = Column(String)
     summary = Column(String)
     
@@ -52,7 +51,7 @@ class Call(Base):
     requires_human_follow_up = Column(Boolean, default=False)
     
     # Metadata
-    vapi_metadata = Column(JSONB)
+    vapi_metadata = Column(JSON)
     cost = Column(Numeric(8, 4))  # Call cost
     
     created_at = Column(DateTime, default=datetime.utcnow)

@@ -2,7 +2,6 @@
 Company and CompanyUser models
 """
 from sqlalchemy import Column, String, Boolean, DateTime, Time, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.database import Base
 import uuid
@@ -12,9 +11,9 @@ from datetime import datetime
 class Company(Base):
     __tablename__ = "companies"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String(255), nullable=False)
-    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+    owner_id = Column(String(36), ForeignKey("users.id"))
     
     # QuickBooks Integration
     quickbooks_realm_id = Column(String(255), unique=True, index=True)
@@ -47,9 +46,9 @@ class CompanyUser(Base):
     """Many-to-many relationship between companies and users"""
     __tablename__ = "company_users"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    company_id = Column(UUID(as_uuid=True), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    company_id = Column(String(36), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     role = Column(String(50), default="member")  # owner, admin, member, viewer
     created_at = Column(DateTime, default=datetime.utcnow)
     
